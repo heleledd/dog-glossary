@@ -83,7 +83,7 @@ function createListFromObject(obj, container) {
             }
         } else {
             // If it's not an array, just display the value
-            li.textContent = `${key}: ${obj[key]}`;
+            li.textContent = `${obj[key]}`;
         }
 
         ol.appendChild(li);
