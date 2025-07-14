@@ -68,14 +68,24 @@ function createListFromObject(obj, container) {
 
     for (let key in obj) {
         const li = document.createElement('li');
-        li.textContent = obj[key];
-        if (obj[key].length > 0) {
-            obj[key].forEach(item => {
-                const subLi = document.createElement('li');
-                subLi.textContent = item;
-                li.appendChild(subLi);
-            })
+
+        if (Array.isArray(obj[key])) {
+            // If it's an array, create a nested list
+            li.textContent = key;  // Use the key as the main bullet point
+            if (obj[key].length > 0) {
+                const subOl = document.createElement('ol');
+                obj[key].forEach(item => {
+                    const subLi = document.createElement('li');
+                    subLi.textContent = item;
+                    subOl.appendChild(subLi);
+                });
+                li.appendChild(subOl);
+            }
+        } else {
+            // If it's not an array, just display the value
+            li.textContent = `${key}: ${obj[key]}`;
         }
+
         ol.appendChild(li);
     }
 
@@ -186,7 +196,6 @@ async function handleSubBreedSubmit() {
 }
 
 async function handleAllBreedsSubmit() {
-
     const allBreeds = await fetchAllBreeds();
     createListFromObject(allBreeds, DOM_ELEMENTS.content);
 }
