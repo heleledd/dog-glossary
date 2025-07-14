@@ -10,7 +10,8 @@ const DOM_ELEMENTS = {
     breedInput: document.getElementById('input-breed'),
     randomDogButton: document.getElementById("button-random-dog"),
     showBreedButton: document.getElementById('button-show-breed'),
-    showSubBreedButton: document.getElementById('button-show-sub-breed')
+    showSubBreedButton: document.getElementById('button-show-sub-breed'),
+    showAllBreedsButton: document.getElementById('button-show-all')
 };
 
 // Reusable fetch function with error handling
@@ -35,7 +36,7 @@ function displayLoading() {
     DOM_ELEMENTS.content.innerHTML = '<p>Fetching dog image...</p>';
 }
 
-function createNumberedList(list, container) {
+function createListFromArray(list, container) {
     // Clear previous content
     while (container.firstChild) {
         container.removeChild(container.firstChild);
@@ -54,6 +55,34 @@ function createNumberedList(list, container) {
     fragment.appendChild(ol);
     container.appendChild(fragment);
 }
+
+function createListFromObject(obj, container) {
+    // Clear previous content
+    while (container.firstChild) {
+        container.removeChild(container.firstChild);
+    }
+
+    // Create a single document fragment to minimize DOM operations
+    const fragment = document.createDocumentFragment();
+    const ol = document.createElement('ol');
+
+    for (let key in obj) {
+        const li = document.createElement('li');
+        li.textContent = obj[key];
+        if (obj[key].length > 0) {
+            obj[key].forEach(item => {
+                const subLi = document.createElement('li');
+                subLi.textContent = item;
+                li.appendChild(subLi);
+            })
+        }
+        ol.appendChild(li);
+    }
+
+    fragment.appendChild(ol);
+    container.appendChild(fragment);
+}
+
 
 
 async function fetchDog() {
@@ -156,7 +185,14 @@ async function handleSubBreedSubmit() {
 
 }
 
+async function handleAllBreedsSubmit() {
+
+    const allBreeds = await fetchAllBreeds();
+    createListFromObject(allBreeds, DOM_ELEMENTS.content);
+}
+
 // Event Listeners
 DOM_ELEMENTS.randomDogButton.addEventListener('click', fetchDog);
 DOM_ELEMENTS.showBreedButton.addEventListener('click', handleBreedSubmit);
 DOM_ELEMENTS.showSubBreedButton.addEventListener('click', handleSubBreedSubmit);
+DOM_ELEMENTS.showAllBreedsButton.addEventListener('click', handleAllBreedsSubmit);
