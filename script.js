@@ -31,18 +31,30 @@ function displayError(message) {
     DOM_ELEMENTS.content.innerHTML = `<p class="error">${message}</p>`;
 }
 
-function displayNumberedList(arr) {
-    DOM_ELEMENTS.content.innerHTML = `<ol id='list'></ol>`;
-    arr.forEach(element => {
-        const listItem = document.createElement('li');
-        listItem.innerText = element;
-        document.getElementById('list').appendChild(listItem);
-    })
-}
-
 function displayLoading() {
     DOM_ELEMENTS.content.innerHTML = '<p>Fetching dog image...</p>';
 }
+
+function createNumberedList(list, container) {
+    // Clear previous content
+    while (container.firstChild) {
+        container.removeChild(container.firstChild);
+    }
+
+    // Create a single document fragment to minimize DOM operations
+    const fragment = document.createDocumentFragment();
+    const ol = document.createElement('ol');
+
+    list.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        ol.appendChild(li);
+    });
+
+    fragment.appendChild(ol);
+    container.appendChild(fragment);
+}
+
 
 async function fetchDog() {
     try {
@@ -138,7 +150,8 @@ async function handleSubBreedSubmit() {
         displayError('No sub-breeds found!');
         return;
     } else {
-        displayNumberedList(subBreeds);
+        createNumberedList(subBreeds, DOM_ELEMENTS.content);
+
     }
 
 }
