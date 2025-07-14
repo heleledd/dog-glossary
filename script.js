@@ -9,7 +9,8 @@ const DOM_ELEMENTS = {
     content: document.querySelector("#content"),
     breedInput: document.getElementById('input-breed'),
     randomDogButton: document.getElementById("button-random-dog"),
-    showBreedButton: document.getElementById('button-show-breed')
+    showBreedButton: document.getElementById('button-show-breed'),
+    showSubBreedButton: document.getElementById('button-show-sub-breed')
 };
 
 // Reusable fetch function with error handling
@@ -28,6 +29,15 @@ function displayImage(imageUrl, altText) {
 
 function displayError(message) {
     DOM_ELEMENTS.content.innerHTML = `<p class="error">${message}</p>`;
+}
+
+function displayNumberedList(arr) {
+    DOM_ELEMENTS.content.innerHTML = `<ol id='list'></ol>`;
+    arr.forEach(element => {
+        const listItem = document.createElement('li');
+        listItem.innerText = element;
+        document.getElementById('list').appendChild(listItem);
+    })
 }
 
 function displayLoading() {
@@ -78,6 +88,20 @@ async function checkIsBreed(breed) {
     }
 }
 
+async function fetchSubBreeds(breed) {
+    try {
+        const allDogBreeds = await fetchAllBreeds();
+        if (allDogBreeds[breed].length > 0) {
+            return allDogBreeds[breed];
+        } else {
+            return undefined;
+        }
+    } catch (error) {
+        console.error("Error checking breed:", error);
+        return false;
+    }
+}
+
 async function handleBreedSubmit() {
     const breed = DOM_ELEMENTS.breedInput.value.trim().toLowerCase();
 
@@ -95,11 +119,31 @@ async function handleBreedSubmit() {
     await fetchDogByBreed(breed);
 }
 
+async function handleSubBreedSubmit() {
+    const breed = DOM_ELEMENTS.breedInput.value.trim().toLowerCase();
+
+    if (!breed) {
+        displayError('Please enter a sub-breed name!');
+        return;
+    }
+
+    const isBreed = await checkIsBreed(breed);
+    if (!isBreed) {
+        displayError('Breed not found!');
+        return;
+    }
+
+    const subBreeds = await fetchSubBreeds(breed);
+    if (!subBreeds) {
+        displayError('No sub-breeds found!');
+        return;
+    } else {
+        displayNumberedList(subBreeds);
+    }
+
+}
+
 // Event Listeners
 DOM_ELEMENTS.randomDogButton.addEventListener('click', fetchDog);
 DOM_ELEMENTS.showBreedButton.addEventListener('click', handleBreedSubmit);
-DOM_ELEMENTS.breedInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        handleBreedSubmit();
-    }
-});
+DOM_ELEMENTS.showSubBreedButton.addEventListener('click', handleSubBreedSubmit);
