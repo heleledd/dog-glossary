@@ -73,13 +73,13 @@ function createListFromObject(obj, container) {
             // If it's an array, create a nested list
             li.textContent = key;  // Use the key as the main bullet point
             if (obj[key].length > 0) {
-                const subOl = document.createElement('ol');
+                const subUl = document.createElement('ul');
                 obj[key].forEach(item => {
                     const subLi = document.createElement('li');
                     subLi.textContent = item;
-                    subOl.appendChild(subLi);
+                    subUl.appendChild(subLi);
                 });
-                li.appendChild(subOl);
+                li.appendChild(subUl);
             }
         } else {
             // If it's not an array, just display the value
@@ -189,7 +189,7 @@ async function handleSubBreedSubmit() {
         displayError('No sub-breeds found!');
         return;
     } else {
-        createNumberedList(subBreeds, DOM_ELEMENTS.content);
+        createListFromArray(subBreeds, DOM_ELEMENTS.content);
 
     }
 
