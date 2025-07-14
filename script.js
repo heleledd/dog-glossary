@@ -1,6 +1,5 @@
-const buttonRandom = document.getElementById("button-random-dog");
 const content = document.querySelector("#content");
-const buttonShowBreed = document.getElementById("button-show-breed");
+
 
 async function fetchDog() {
     try {
@@ -14,7 +13,7 @@ async function fetchDog() {
     } catch (error) {
         console.error('Detailed error:', error);
         // Handle the error appropriately, maybe show a message to the user
-        content.innerHTML = `<p>Oops! Something went wrong! Error: ${error.message}</p>`;
+        content.innerHTML = `<p>Oops! Something went wrong while fetching a random dog! Error: ${error.message}</p>`;
     }
 }
 
@@ -25,46 +24,56 @@ async function fetchDogByBreed(breed) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        let dogImage = data.message;
+        let dogImageArray = data.message;
+        let index = Math.floor(Math.random() * dogImageArray.length);   // choose randomly out of the images returned
+        let dogImage = dogImageArray[index];
         content.innerHTML = `<img src="${dogImage}" alt="random dog">`;
     } catch (error) {
         console.error('Detailed error:', error);
         // Handle the error appropriately, maybe show a message to the user
-        content.innerHTML = `<p>Oops! Something went wrong! Error: ${error.message}</p>`;
+        content.innerHTML = `<p>Oops! Something went wrong while fetching an image of a ${breed}! Error: ${error.message}</p>`;
     }
 }
 
-async function checkIsBreed(breed) {
+async function fetchAllBreeds() {
     try {
         const response = await fetch('https://dog.ceo/api/breeds/list/all');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        let allDogBreeds = data.message;
-        console.log(allDogBreeds);
+        return data.message;
     } catch (error) {
         console.error("Can't reach the dog api. Detailed error:", error);
+        throw error; // Re-throw to handle it in the calling function
     }
-
 }
 
-buttonRandom.addEventListener('click', () => {
-    // Do something when the button is clicked
-    let dogImage = fetchDog();
-    content.innerHTML = `<img src="${dogImage}" alt="random dog">`;
-});
+async function checkIsBreed(breed) {
+    try {
+        const allDogBreeds = await fetchAllBreeds();
+        let isBreed = allDogBreeds.hasOwnProperty(breed)
+        return isBreed;
+    } catch (error) {
+        console.error("Error checking breed:", error);
+        return false;
+    }
+}
 
-buttonShowBreed.addEventListener('click', () => {
-    const inputBreed = document.getElementById("input-breed");
-    const breed = inputBreed.value.toLowerCase().trim();
-    if (!breed) return;     // If the breed is undefined, return without anything
-    let isBreed = checkIsBreed(breed);
-    if (isBreed) {
-        let dogImage = fetchDogByBreed();
-        content.innerHTML = `<img src="${dogImage}" alt="random dog">`;
-    } else {
+async function handleBreedSubmit() {
+    const breed = document.getElementById('input-breed').value.toLowerCase();
+    const content = document.getElementById('content');
+
+    const isBreed = await checkIsBreed(breed);
+
+    if (!isBreed) {
         content.innerHTML = `<p>Breed not found!</p>`;
+        return; // Exit the function early
     }
 
-})
+    // If we get here, the breed is valid, so proceed with fetching the dog image
+    await fetchDogByBreed(breed);
+}
+
+document.getElementById("button-random-dog").addEventListener('click', fetchDog);
+document.getElementById('button-show-breed').addEventListener('click', handleBreedSubmit);
