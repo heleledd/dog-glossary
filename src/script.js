@@ -25,7 +25,7 @@ async function fetchFromAPI(url) {
 
 // Display functions
 function displayImage(imageUrl, altText) {
-    DOM_ELEMENTS.content.innerHTML = `<img src="${imageUrl}" alt="${altText}">`;
+    DOM_ELEMENTS.content.innerHTML = `<img src="${imageUrl}" alt="${altText}" class="w-full h-full object-contain">`;
 }
 
 function displayError(message) {

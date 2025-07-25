@@ -1,0 +1,25 @@
+{
+  "name": "src",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "build-css": "npx @tailwindcss/cli -i ./src/input.css -o ./src/output.css",
+    "watch": "npx @tailwindcss/cli -i ./src/input.css -o ./src/output.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/heleledd/dog-glossary.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/heleledd/dog-glossary/issues"
+  },
+  "homepage": "https://github.com/heleledd/dog-glossary#readme",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.11",
+    "tailwindcss": "^4.1.11"
+  }
+}

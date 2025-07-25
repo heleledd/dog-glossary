@@ -1,0 +1,1 @@
+Using Tailwind: To compile CSS run 'npm run build-css' in the terminal
